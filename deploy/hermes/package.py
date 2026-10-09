@@ -25,10 +25,11 @@ def safe_path(name):
     path = pathlib.PurePosixPath(name)
     return not (
         path.is_absolute() or ".." in path.parts
-        or any(p in {".git", "node_modules", ".secrets", "runtime"} for p in path.parts)
+        or any(p in {".git", "node_modules", ".secrets", ".ssh", "runtime"} for p in path.parts)
         or any((p == ".env" or p.startswith(".env.")) and not p.endswith(".example")
                for p in path.parts)
-        or path.name in {"app.env", "mongo-uri", "mongo-uri-docker"}
+        or path.name.endswith(".env")
+        or path.name in {"admin-password", "mongo-uri", "mongo-uri-docker", "id_rsa", "id_ed25519"}
         or path.name.endswith((".key", ".pem"))
     )
 
@@ -69,8 +70,8 @@ def main():
     with tarfile.open(archive, "w:gz") as tar:
         for name in sorted(names):
             file = repo / name
-            if file.is_symlink() and not file.resolve().is_relative_to(repo):
-                raise SystemExit(f"Source symlink escapes repository: {name}")
+            if file.is_symlink():
+                raise SystemExit(f"Source symlinks are unsupported: {name}")
             tar.add(file, arcname=f"librechat/{name}", recursive=False)
     archive.chmod(0o600)
     digest = hashlib.file_digest(archive.open("rb"), "sha256").hexdigest()
