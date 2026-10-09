@@ -1,0 +1,32 @@
+name: librechat
+services:
+  app:
+    image: ghcr.io/librechat-ai/librechat@sha256:0dba606ca84b6fdf313718d11e4fbf6874baf0122269676d83db3987377151e2
+    container_name: librechat-app
+    restart: unless-stopped
+    network_mode: host
+    env_file: [./app.env]
+    init: true
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    volumes:
+      - ./librechat.yaml:/app/librechat.yaml:ro
+      - ../current/client/dist:/app/client/dist:ro
+      - librechat-images:/app/client/public/images
+      - librechat-uploads:/app/uploads
+      - librechat-logs:/app/logs
+      - librechat-data:/app/data
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3080/readyz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      start_period: 90s
+      retries: 3
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: '3'}
+volumes:
+  librechat-images:
+  librechat-uploads:
+  librechat-logs:
+  librechat-data:

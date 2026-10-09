@@ -1,0 +1,45 @@
+version: "1.3.17"
+cache: true
+interface:
+  modelSelect: true
+  parameters: false
+  agents: {use: false, create: false, share: false, public: false}
+  mcpServers: {use: false, create: false, share: false, public: false}
+  remoteAgents: {use: false, create: false, share: false, public: false}
+  skills: {use: false, create: false, share: false, public: false}
+  marketplace: {use: false}
+  memories: false
+  runCode: false
+  webSearch: false
+  fileSearch: false
+  fileCitations: false
+  schedules: false
+  defaultPinnedTools: []
+mcpServers: {}
+summarization:
+  enabled: false
+endpoints:
+  all:
+    titleConvo: false
+    activityLabel: false
+    activityPhaseLabel: false
+    reasoningLabel: false
+  agents:
+    disableBuilder: true
+    capabilities: []
+  custom:
+    - name: Hermes
+      apiKey: "${HERMES_API_KEY}"
+      baseURL: "http://127.0.0.1:8642/v1"
+      models:
+        default: [MiniMax-M3.1-Flash-Preview, MiniMax-M3]
+        fetch: false
+      tokenConfig:
+        MiniMax-M3.1-Flash-Preview: {prompt: 0, completion: 0, context: 1000000}
+        MiniMax-M3: {prompt: 0, completion: 0, context: 1000000}
+      modelDisplayLabel: Hermes
+fileConfig:
+  endpoints:
+    default: {disabled: true}
+    custom: {disabled: true}
+    Hermes: {disabled: true}
