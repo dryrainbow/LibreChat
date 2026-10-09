@@ -52,8 +52,10 @@ export default function Thinking({ startupConfig }: { startupConfig?: TStartupCo
         aria-label={`${label}: ${displayLabel(value)}`}
         className="my-1 w-auto min-w-0 shrink-0 gap-1 rounded-xl border-border-light bg-presentation px-2 text-xs text-text-primary"
       >
-        <span className="hidden sm:inline">{label}:</span>
-        <SelectValue />
+        <span className="min-w-0">
+          <span className="mr-1 hidden sm:inline">{label}:</span>
+          <SelectValue />
+        </span>
       </SelectTrigger>
       <SelectContent>
         {isUnavailable && (
