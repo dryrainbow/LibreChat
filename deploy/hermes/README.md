@@ -18,6 +18,17 @@ flowchart LR
     Source[Linux ПК: Git + React build] -->|SSH deploy| Pi
 ```
 
+## Выбор режима M3
+
+В селекторе подключения LibreChat выберите `Hermes` и модель `MiniMax-M3` для
+режима reasoning `enabled`. Для режима `adaptive` выберите `Hermes Adaptive`:
+он предлагает ту же модель `MiniMax-M3`, которая сама решает, когда использовать
+reasoning. Подключение и режим сохраняются вместе с диалогом.
+
+`MiniMax-M3.1-Flash-Preview` остаётся в подключении `Hermes` с прежним названием;
+адаптер Flash всегда использует `adaptive`. Эти режимы задаются в конфигурации
+подключений: менять или пересобирать frontend LibreChat не требуется.
+
 ## Версия и границы релиза
 
 Основа — LibreChat `v0.8.8`, commit `e8f3be08623663d4ad7f7241e693c94469b63bb0`.

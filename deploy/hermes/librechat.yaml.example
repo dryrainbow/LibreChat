@@ -38,8 +38,24 @@ endpoints:
         MiniMax-M3.1-Flash-Preview: {prompt: 0, completion: 0, context: 1000000}
         MiniMax-M3: {prompt: 0, completion: 0, context: 1000000}
       modelDisplayLabel: Hermes
+      addParams:
+        model_options:
+          reasoning: {enabled: true, mode: enabled}
+    - name: Hermes Adaptive
+      apiKey: "${HERMES_API_KEY}"
+      baseURL: "http://127.0.0.1:8642/v1"
+      models:
+        default: [MiniMax-M3]
+        fetch: false
+      tokenConfig:
+        MiniMax-M3: {prompt: 0, completion: 0, context: 1000000}
+      modelDisplayLabel: Hermes Adaptive
+      addParams:
+        model_options:
+          reasoning: {enabled: true, mode: adaptive}
 fileConfig:
   endpoints:
     default: {disabled: true}
     custom: {disabled: true}
     Hermes: {disabled: true}
+    Hermes Adaptive: {disabled: true}
