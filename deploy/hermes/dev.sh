@@ -15,5 +15,5 @@ trap cleanup EXIT INT TERM
 ssh -i "$key" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
   -o ExitOnForwardFailure=yes -M -S "$socket" -fNT \
   -L 127.0.0.1:13080:127.0.0.1:3080 "$pi"
-export HOST=127.0.0.1 BACKEND_PORT=13080 PORT=3090
+export HOST=127.0.0.1 BACKEND_PORT=13080 PORT=3090 HERMES_DEV_HTTP=1
 npm run frontend:dev

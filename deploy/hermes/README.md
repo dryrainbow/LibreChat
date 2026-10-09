@@ -80,6 +80,11 @@ bash deploy/hermes/dev.sh
 После закрытия dev server tunnel закрывается. Порты слушают только loopback.
 Можно указать `PI_SSH=user@address` и `PI_SSH_KEY=/path/to/key`.
 
+`dev.sh` включает `HERMES_DEV_HTTP=1`: Vite сохраняет локальный Host при proxy и
+снимает только `Secure` с ответных cookies, чтобы HTTP dev login/refresh работал
+одинаково в браузерах. `HttpOnly` и `SameSite` сохраняются. Этот профиль допускается
+только с `HOST=127.0.0.1`; production cookies и frontend build он не меняет.
+
 Для доступа с другой машины самостоятельно откройте SSH forwarding порта `3090`;
 не меняйте Vite HOST на публичный адрес. Dev использует API и данные выбранного Pi,
 поэтому для экспериментов с изменением данных нужен отдельный тестовый instance.

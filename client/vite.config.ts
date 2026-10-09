@@ -7,7 +7,7 @@ import { createRequire } from 'module';
 import { VitePWA } from 'vite-plugin-pwa';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { compression, defineAlgorithm } from 'vite-plugin-compression2';
-import type { Plugin } from 'vite';
+import type { Plugin, ProxyOptions } from 'vite';
 
 const require = createRequire(import.meta.url);
 
@@ -38,6 +38,32 @@ const backendHost = process.env.HOST?.includes(':') ? `[${process.env.HOST}]` : 
 const backendURL = backendHost
   ? `http://${backendHost}:${backendPort}`
   : `http://localhost:${backendPort}`;
+const hermesDevHttp = process.env.HERMES_DEV_HTTP === '1';
+if (hermesDevHttp && process.env.HOST !== '127.0.0.1') {
+  throw new Error('HERMES_DEV_HTTP requires HOST=127.0.0.1');
+}
+
+function backendProxy(): ProxyOptions {
+  return {
+    target: backendURL,
+    changeOrigin: !hermesDevHttp,
+    configure(proxy) {
+      if (!hermesDevHttp) {
+        return;
+      }
+      // The SSH-backed dev UI uses loopback HTTP; production cookies remain secure.
+      proxy.on('proxyRes', (response) => {
+        const cookies = response.headers['set-cookie'];
+        if (cookies) {
+          response.headers['set-cookie'] = cookies.map((cookie) =>
+            cookie.replace(/;\s*Secure(?=;|$)/gi, ''),
+          );
+        }
+      });
+    },
+  };
+}
+
 const buildSourceMap = process.env.NODE_ENV === 'development';
 const QUERY_DEVTOOLS_CHUNK_MODULES = [
   '@tanstack/react-query-devtools',
@@ -56,14 +82,8 @@ export default defineConfig(({ command }) => ({
     port: (process.env.PORT && Number(process.env.PORT)) || 3090,
     strictPort: false,
     proxy: {
-      '/api': {
-        target: backendURL,
-        changeOrigin: true,
-      },
-      '/oauth': {
-        target: backendURL,
-        changeOrigin: true,
-      },
+      '/api': backendProxy(),
+      '/oauth': backendProxy(),
     },
   },
   // Set the directory where environment variables are loaded from and restrict prefixes
