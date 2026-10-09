@@ -15,10 +15,11 @@ import { getSelectedIcon, getDisplayValue } from './utils';
 import { CustomMenu as Menu } from './CustomMenu';
 import DialogManager from './DialogManager';
 import { useLocalize } from '~/hooks';
+import Thinking from './Thinking';
 
 const defaultInterface = getConfigDefaults().interface;
 
-function ModelSelectorContent() {
+function ModelSelectorContent({ startupConfig }: ModelSelectorProps) {
   const localize = useLocalize();
   const modelSelectorHint = useShortcutHint('openModelSelector', localize('com_ui_select_model'));
   const modelSelectorAriaKey = useShortcutAriaKey('openModelSelector');
@@ -88,37 +89,40 @@ function ModelSelectorContent() {
   );
 
   return (
-    <div className="relative flex min-w-0 max-w-[60vw] flex-col items-center gap-2 sm:max-w-xs">
-      <Menu
-        values={selectedValues}
-        onValuesChange={(values: Record<string, any>) => {
-          setSelectedValues({
-            endpoint: values.endpoint || '',
-            model: values.model || '',
-            modelSpec: values.modelSpec || '',
-          });
-        }}
-        onSearch={(value) => setSearchValue(value)}
-        combobox={<input id="model-search" placeholder=" " />}
-        comboboxLabel={localize('com_endpoint_search_models')}
-        trigger={trigger}
-      >
-        {searchResults ? (
-          renderSearchResults(searchResults, localize, searchValue)
-        ) : (
-          <>
-            {/* Render ungrouped modelSpecs (no group field) */}
-            {renderModelSpecs(
-              modelSpecs?.filter((spec) => !spec.group) || [],
-              selectedValues.modelSpec || '',
-            )}
-            {/* Render endpoints (will include grouped specs matching endpoint names) */}
-            {renderEndpoints(mappedEndpoints ?? [])}
-            {/* Render custom groups (specs with group field not matching any endpoint) */}
-            {renderCustomGroups(modelSpecs || [], mappedEndpoints ?? [])}
-          </>
-        )}
-      </Menu>
+    <div className="relative flex min-w-0 max-w-full items-center gap-2">
+      <div className="min-w-0 max-w-[60vw] sm:max-w-xs">
+        <Menu
+          values={selectedValues}
+          onValuesChange={(values: Record<string, any>) => {
+            setSelectedValues({
+              endpoint: values.endpoint || '',
+              model: values.model || '',
+              modelSpec: values.modelSpec || '',
+            });
+          }}
+          onSearch={(value) => setSearchValue(value)}
+          combobox={<input id="model-search" placeholder=" " />}
+          comboboxLabel={localize('com_endpoint_search_models')}
+          trigger={trigger}
+        >
+          {searchResults ? (
+            renderSearchResults(searchResults, localize, searchValue)
+          ) : (
+            <>
+              {/* Render ungrouped modelSpecs (no group field) */}
+              {renderModelSpecs(
+                modelSpecs?.filter((spec) => !spec.group) || [],
+                selectedValues.modelSpec || '',
+              )}
+              {/* Render endpoints (will include grouped specs matching endpoint names) */}
+              {renderEndpoints(mappedEndpoints ?? [])}
+              {/* Render custom groups (specs with group field not matching any endpoint) */}
+              {renderCustomGroups(modelSpecs || [], mappedEndpoints ?? [])}
+            </>
+          )}
+        </Menu>
+      </div>
+      <Thinking startupConfig={startupConfig} />
       <DialogManager
         keyDialogOpen={keyDialogOpen}
         onOpenChange={onOpenChange}
@@ -141,7 +145,7 @@ export default function ModelSelector({ startupConfig }: ModelSelectorProps) {
   return (
     <ModelSelectorChatProvider>
       <ModelSelectorProvider startupConfig={startupConfig}>
-        <ModelSelectorContent />
+        <ModelSelectorContent startupConfig={startupConfig} />
       </ModelSelectorProvider>
     </ModelSelectorChatProvider>
   );
